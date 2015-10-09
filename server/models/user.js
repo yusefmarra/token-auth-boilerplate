@@ -8,20 +8,19 @@ SALT_WORK_FACTOR = 10;
 
 var User = new Schema (
   {
-    name: { type:String, required:true, index:{ unique:true } },
+    name: { type:String, required:false },
+    email: { type:String, required:true, index:{unique:true} },
     password: { type:String, required:true },
     admin: { type:Boolean, required:false },
-    roles: [],
-    restaurantId: { type:String, required:true, index:{ unique:true } },
   }
 );
 
 User.pre('save', function(next) {
   var user = this;
 
-  // if (!user.isModified('password')) {
-  //   return next();
-  // }
+  if (!user.isModified('password')) {
+    return next();
+  }
 
   bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
     if (!err) {
@@ -45,4 +44,4 @@ User.methods.comparePassword = function(inputPassword, cb) {
 };
 
 mongoose.model('users', User);
-mongoose.connect('mongodb://localhost/scheduler');
+mongoose.connect('mongodb://localhost/token-auth-boilerplate');
